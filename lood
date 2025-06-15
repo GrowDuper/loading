@@ -184,7 +184,7 @@ end
 
 -- Loading bar anim
 local function animateLoadingBar()
-    local tweenInfo = TweenInfo.new(240, Enum.EasingStyle.Linear)
+    local tweenInfo = TweenInfo.new(180, Enum.EasingStyle.Linear)
     local tween = TweenService:Create(loadingBar, tweenInfo, {Size = UDim2.new(1, 0, 1, 0)})
     tween:Play()
     tween.Completed:Connect(function()
