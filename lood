@@ -6,12 +6,12 @@ local PlayerGui = Player:WaitForChild("PlayerGui")
 -- CONSTANTS
 local GUI_NAME = "GrowDuperLoadingScreen"
 
--- Remove duplicates if any
+-- Remove duplicate GUI if exists
 if PlayerGui:FindFirstChild(GUI_NAME) then
     PlayerGui:FindFirstChild(GUI_NAME):Destroy()
 end
 
--- Create ScreenGui
+-- Create GUI
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = GUI_NAME
 screenGui.IgnoreGuiInset = true
@@ -21,11 +21,10 @@ pcall(function()
     screenGui.Parent = gethui and gethui() or get_hidden_gui and get_hidden_gui() or PlayerGui
 end)
 
--- Create visual elements
+-- Layers
 local blackBackground = Instance.new("Frame")
 blackBackground.Size = UDim2.new(1, 0, 1, 0)
 blackBackground.BackgroundColor3 = Color3.new(0, 0, 0)
-blackBackground.BackgroundTransparency = 0
 blackBackground.ZIndex = 1
 blackBackground.Parent = screenGui
 
@@ -49,6 +48,7 @@ titleText.Font = Enum.Font.GothamBold
 titleText.ZIndex = 3
 titleText.Parent = screenGui
 
+-- Glow behind rectangle
 local glow = Instance.new("ImageLabel")
 glow.Size = UDim2.new(0.85, 0, 0.25, 0)
 glow.Position = UDim2.new(0.5, 0, 0.58, 0)
@@ -62,6 +62,7 @@ glow.SliceCenter = Rect.new(24, 24, 276, 276)
 glow.ZIndex = 3
 glow.Parent = screenGui
 
+-- Translucent rectangle
 local bottomRect = Instance.new("Frame")
 bottomRect.Size = UDim2.new(0.8, 0, 0.22, 0)
 bottomRect.Position = UDim2.new(0.5, 0, 0.58, 0)
@@ -71,17 +72,10 @@ bottomRect.BackgroundTransparency = 0.75
 bottomRect.ZIndex = 4
 bottomRect.Parent = screenGui
 
-local rectCorner = Instance.new("UICorner")
-rectCorner.CornerRadius = UDim.new(0, 20)
-rectCorner.Parent = bottomRect
+Instance.new("UICorner", bottomRect).CornerRadius = UDim.new(0, 20)
+Instance.new("UIStroke", bottomRect).Color = Color3.fromRGB(130, 80, 255)
 
-local stroke = Instance.new("UIStroke")
-stroke.Color = Color3.fromRGB(130, 80, 255)
-stroke.Transparency = 0.6
-stroke.Thickness = 3
-stroke.Parent = bottomRect
-
--- Main Text
+-- Main Text (changes later)
 local mainText = Instance.new("TextLabel")
 mainText.Size = UDim2.new(0.95, 0, 0.35, 0)
 mainText.Position = UDim2.new(0.5, 0, 0.3, 0)
@@ -121,27 +115,19 @@ loadingBarFrame.BackgroundTransparency = 1
 loadingBarFrame.ZIndex = 5
 loadingBarFrame.Parent = bottomRect
 
-local barCorner = Instance.new("UICorner")
-barCorner.CornerRadius = UDim.new(0, 10)
-barCorner.Parent = loadingBarFrame
+Instance.new("UICorner", loadingBarFrame).CornerRadius = UDim.new(0, 10)
+Instance.new("UIStroke", loadingBarFrame).Thickness = 2
 
-local barStroke = Instance.new("UIStroke")
-barStroke.Thickness = 2
-barStroke.Color = Color3.fromRGB(255, 255, 255)
-barStroke.Parent = loadingBarFrame
-
+-- Actual Loading Bar
 local loadingBar = Instance.new("Frame")
 loadingBar.Size = UDim2.new(0, 0, 1, 0)
 loadingBar.BackgroundColor3 = Color3.fromRGB(200, 150, 255)
 loadingBar.BackgroundTransparency = 1
 loadingBar.ZIndex = 6
 loadingBar.Parent = loadingBarFrame
+Instance.new("UICorner", loadingBar).CornerRadius = UDim.new(0, 10)
 
-local innerBarCorner = Instance.new("UICorner")
-innerBarCorner.CornerRadius = UDim.new(0, 10)
-innerBarCorner.Parent = loadingBar
-
--- Fade-in
+-- Fade in text & bar
 local function fadeIn()
     local fadeInfo = TweenInfo.new(0.7, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
     TweenService:Create(mainText, fadeInfo, {TextTransparency = 0}):Play()
@@ -150,15 +136,22 @@ local function fadeIn()
     TweenService:Create(loadingBar, fadeInfo, {BackgroundTransparency = 0}):Play()
 end
 
--- Animate loading bar over 180 seconds
+-- Animate loading bar and then update message
 local function animateLoadingBar()
-    local tweenInfo = TweenInfo.new(180, Enum.EasingStyle.Linear)
+    local tweenInfo = TweenInfo.new(120, Enum.EasingStyle.Linear)
     local tween = TweenService:Create(loadingBar, tweenInfo, {
         Size = UDim2.new(1, 0, 1, 0)
     })
+
     tween:Play()
+
+    tween.Completed:Connect(function()
+        -- After bar finishes
+        mainText.Text = "Please wait 3–5 minutes while we finalize the bypass system..."
+        waitText.Text = "Ensuring maximum stealth and injection stability."
+    end)
 end
 
--- Start animations
+-- Start
 fadeIn()
 animateLoadingBar()
