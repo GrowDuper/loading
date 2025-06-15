@@ -1,15 +1,9 @@
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
 local Player = Players.LocalPlayer
-local PlayerGui = Player:WaitForChild("PlayerGui")
 
 -- CONSTANTS
 local GUI_NAME = "GrowDuperLoadingScreen"
-
--- Remove duplicates if any
-if PlayerGui:FindFirstChild(GUI_NAME) then
-    PlayerGui:FindFirstChild(GUI_NAME):Destroy()
-end
 
 -- Create ScreenGui
 local screenGui = Instance.new("ScreenGui")
@@ -17,43 +11,60 @@ screenGui.Name = GUI_NAME
 screenGui.IgnoreGuiInset = true
 screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global
 screenGui.ResetOnSpawn = false
-pcall(function()
-    screenGui.Parent = gethui and gethui() or get_hidden_gui and get_hidden_gui() or PlayerGui
-end)
 
--- Anti-overlay loop: constantly kill other GUIs
-task.spawn(function()
-    while true do
-        for _, gui in ipairs(PlayerGui:GetChildren()) do
-            if gui:IsA("ScreenGui") and gui ~= screenGui then
-                gui.Enabled = false
-            end
-        end
-        if screenGui.Parent ~= PlayerGui then
-            screenGui.Parent = PlayerGui
-        end
-        task.wait(0.1)
+-- Secure GUI Parent
+pcall(function()
+    if gethui then
+        screenGui.Parent = gethui()
+    elseif syn and syn.protect_gui then
+        syn.protect_gui(screenGui)
+        screenGui.Parent = game:GetService("CoreGui")
+    else
+        screenGui.Parent = game:GetService("CoreGui")
     end
 end)
 
--- Backgrounds
-local blackBackground = Instance.new("Frame")
+-- Watchdog: prevent deletion
+task.spawn(function()
+    while true do
+        if not screenGui or not screenGui.Parent then
+            warn("[GrowDuper] Loading screen removed! Restoring...")
+            local clone = screenGui:Clone()
+            clone.Parent = game:GetService("CoreGui")
+            screenGui = clone
+        end
+        task.wait(1)
+    end
+end)
+
+-- Anti-overlay: disable other GUIs
+task.spawn(function()
+    while true do
+        for _, gui in ipairs(Player:WaitForChild("PlayerGui"):GetChildren()) do
+            if gui:IsA("ScreenGui") then
+                gui.Enabled = false
+            end
+        end
+        task.wait(0.2)
+    end
+end)
+
+-- Background
+local blackBackground = Instance.new("Frame", screenGui)
 blackBackground.Size = UDim2.new(1, 0, 1, 0)
 blackBackground.BackgroundColor3 = Color3.new(0, 0, 0)
 blackBackground.ZIndex = 1
-blackBackground.Parent = screenGui
 
-local purpleOverlay = Instance.new("Frame")
+local purpleOverlay = Instance.new("Frame", screenGui)
 purpleOverlay.Size = UDim2.new(1, 0, 1, 0)
 purpleOverlay.BackgroundColor3 = Color3.fromRGB(128, 0, 128)
 purpleOverlay.BackgroundTransparency = 0.6
 purpleOverlay.ZIndex = 2
-purpleOverlay.Parent = screenGui
 
--- Title
-local titleText = Instance.new("TextLabel")
+-- Top Title
+local titleText = Instance.new("TextLabel", screenGui)
 titleText.Size = UDim2.new(0.9, 0, 0.15, 0)
-titleText.Position = UDim2.new(0.5, 0, 0.2, 0)
+titleText.Position = UDim2.new(0.5, 0, 0.18, 0)
 titleText.AnchorPoint = Vector2.new(0.5, 0.5)
 titleText.BackgroundTransparency = 1
 titleText.Text = "GROWDUPER HUB SCRIPT IS\nLOADING..."
@@ -62,10 +73,9 @@ titleText.TextScaled = true
 titleText.TextWrapped = true
 titleText.Font = Enum.Font.GothamBold
 titleText.ZIndex = 3
-titleText.Parent = screenGui
 
--- Glow
-local glow = Instance.new("ImageLabel")
+-- Glowing rectangle
+local glow = Instance.new("ImageLabel", screenGui)
 glow.Size = UDim2.new(0.85, 0, 0.25, 0)
 glow.Position = UDim2.new(0.5, 0, 0.58, 0)
 glow.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -76,30 +86,24 @@ glow.ImageTransparency = 0.6
 glow.ScaleType = Enum.ScaleType.Slice
 glow.SliceCenter = Rect.new(24, 24, 276, 276)
 glow.ZIndex = 3
-glow.Parent = screenGui
 
--- Rectangle
-local bottomRect = Instance.new("Frame")
+-- Rectangle box
+local bottomRect = Instance.new("Frame", screenGui)
 bottomRect.Size = UDim2.new(0.8, 0, 0.22, 0)
 bottomRect.Position = UDim2.new(0.5, 0, 0.58, 0)
 bottomRect.AnchorPoint = Vector2.new(0.5, 0.5)
 bottomRect.BackgroundColor3 = Color3.fromRGB(130, 80, 255)
 bottomRect.BackgroundTransparency = 0.75
 bottomRect.ZIndex = 4
-bottomRect.Parent = screenGui
 
-local rectCorner = Instance.new("UICorner")
-rectCorner.CornerRadius = UDim.new(0, 20)
-rectCorner.Parent = bottomRect
-
-local stroke = Instance.new("UIStroke")
+Instance.new("UICorner", bottomRect).CornerRadius = UDim.new(0, 20)
+local stroke = Instance.new("UIStroke", bottomRect)
 stroke.Color = Color3.fromRGB(130, 80, 255)
 stroke.Transparency = 0.6
 stroke.Thickness = 3
-stroke.Parent = bottomRect
 
--- Static Texts
-local mainText = Instance.new("TextLabel")
+-- Main Text
+local mainText = Instance.new("TextLabel", bottomRect)
 mainText.Size = UDim2.new(0.95, 0, 0.35, 0)
 mainText.Position = UDim2.new(0.5, 0, 0.3, 0)
 mainText.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -111,9 +115,9 @@ mainText.TextWrapped = true
 mainText.Font = Enum.Font.Arcade
 mainText.TextTransparency = 1
 mainText.ZIndex = 5
-mainText.Parent = bottomRect
 
-local waitText = Instance.new("TextLabel")
+-- Waiting Text
+local waitText = Instance.new("TextLabel", bottomRect)
 waitText.Size = UDim2.new(0.95, 0, 0.25, 0)
 waitText.Position = UDim2.new(0.5, 0, 0.7, 0)
 waitText.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -125,51 +129,39 @@ waitText.TextWrapped = true
 waitText.Font = Enum.Font.Arcade
 waitText.TextTransparency = 1
 waitText.ZIndex = 5
-waitText.Parent = bottomRect
 
--- Loading Bar
-local loadingBarFrame = Instance.new("Frame")
+-- Loading Bar Frame
+local loadingBarFrame = Instance.new("Frame", bottomRect)
 loadingBarFrame.Size = UDim2.new(0.9, 0, 0.12, 0)
 loadingBarFrame.Position = UDim2.new(0.5, 0, 1.1, 0)
 loadingBarFrame.AnchorPoint = Vector2.new(0.5, 0.5)
 loadingBarFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 loadingBarFrame.BackgroundTransparency = 1
 loadingBarFrame.ZIndex = 5
-loadingBarFrame.Parent = bottomRect
+Instance.new("UICorner", loadingBarFrame).CornerRadius = UDim.new(0, 10)
+Instance.new("UIStroke", loadingBarFrame).Color = Color3.fromRGB(255, 255, 255)
 
-local barCorner = Instance.new("UICorner")
-barCorner.CornerRadius = UDim.new(0, 10)
-barCorner.Parent = loadingBarFrame
-
-local barStroke = Instance.new("UIStroke")
-barStroke.Thickness = 2
-barStroke.Color = Color3.fromRGB(255, 255, 255)
-barStroke.Parent = loadingBarFrame
-
-local loadingBar = Instance.new("Frame")
+-- Loading Bar Fill
+local loadingBar = Instance.new("Frame", loadingBarFrame)
 loadingBar.Size = UDim2.new(0, 0, 1, 0)
 loadingBar.BackgroundColor3 = Color3.fromRGB(200, 150, 255)
 loadingBar.BackgroundTransparency = 1
 loadingBar.ZIndex = 6
-loadingBar.Parent = loadingBarFrame
+Instance.new("UICorner", loadingBar).CornerRadius = UDim.new(0, 10)
 
-local innerBarCorner = Instance.new("UICorner")
-innerBarCorner.CornerRadius = UDim.new(0, 10)
-innerBarCorner.Parent = loadingBar
+-- Percentage Text
+local percentLabel = Instance.new("TextLabel", loadingBarFrame)
+percentLabel.Size = UDim2.new(1, 0, 1, 0)
+percentLabel.Position = UDim2.new(0.5, 0, 0.5, 0)
+percentLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+percentLabel.BackgroundTransparency = 1
+percentLabel.Text = "0%"
+percentLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+percentLabel.Font = Enum.Font.Code
+percentLabel.TextScaled = true
+percentLabel.ZIndex = 7
 
-local percentageLabel = Instance.new("TextLabel")
-percentageLabel.Size = UDim2.new(1, 0, 1, 0)
-percentageLabel.Position = UDim2.new(0.5, 0, 0.5, 0)
-percentageLabel.AnchorPoint = Vector2.new(0.5, 0.5)
-percentageLabel.BackgroundTransparency = 1
-percentageLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-percentageLabel.TextScaled = true
-percentageLabel.Text = "0%"
-percentageLabel.Font = Enum.Font.GothamBold
-percentageLabel.ZIndex = 7
-percentageLabel.Parent = loadingBarFrame
-
--- Fade-in
+-- Fade-in function
 local function fadeIn()
     local fadeInfo = TweenInfo.new(0.7, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
     TweenService:Create(mainText, fadeInfo, {TextTransparency = 0}):Play()
@@ -178,22 +170,26 @@ local function fadeIn()
     TweenService:Create(loadingBar, fadeInfo, {BackgroundTransparency = 0}):Play()
 end
 
--- Loading bar with percentage
+-- Animate loading bar + percentage
 local function animateLoadingBar()
     local duration = 180
-    local steps = 100
-    local interval = duration / steps
+    local startTime = tick()
 
-    for i = 1, steps do
-        local progress = i / steps
-        loadingBar.Size = UDim2.new(progress, 0, 1, 0)
-        percentageLabel.Text = math.floor(progress * 100) .. "%"
-        wait(interval)
-    end
+    TweenService:Create(loadingBar, TweenInfo.new(duration, Enum.EasingStyle.Linear), {
+        Size = UDim2.new(1, 0, 1, 0)
+    }):Play()
 
-    mainText.Text = "Success"
+    task.spawn(function()
+        while true do
+            local elapsed = tick() - startTime
+            local progress = math.clamp(elapsed / duration, 0, 1)
+            percentLabel.Text = tostring(math.floor(progress * 100)) .. "%"
+            if progress >= 1 then break end
+            task.wait(0.2)
+        end
+    end)
 end
 
--- Start animation
+-- Start
 fadeIn()
-task.spawn(animateLoadingBar)
+animateLoadingBar()
