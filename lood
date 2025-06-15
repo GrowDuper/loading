@@ -81,7 +81,7 @@ stroke.Transparency = 0.6
 stroke.Thickness = 3
 stroke.Parent = bottomRect
 
--- Static texts
+-- Main Text
 local mainText = Instance.new("TextLabel")
 mainText.Size = UDim2.new(0.95, 0, 0.35, 0)
 mainText.Position = UDim2.new(0.5, 0, 0.3, 0)
@@ -96,6 +96,7 @@ mainText.TextTransparency = 1
 mainText.ZIndex = 5
 mainText.Parent = bottomRect
 
+-- Wait Text
 local waitText = Instance.new("TextLabel")
 waitText.Size = UDim2.new(0.95, 0, 0.25, 0)
 waitText.Position = UDim2.new(0.5, 0, 0.7, 0)
@@ -110,7 +111,7 @@ waitText.TextTransparency = 1
 waitText.ZIndex = 5
 waitText.Parent = bottomRect
 
--- Loading bar
+-- Loading Bar Frame
 local loadingBarFrame = Instance.new("Frame")
 loadingBarFrame.Size = UDim2.new(0.9, 0, 0.12, 0)
 loadingBarFrame.Position = UDim2.new(0.5, 0, 1.1, 0)
@@ -149,19 +150,15 @@ local function fadeIn()
     TweenService:Create(loadingBar, fadeInfo, {BackgroundTransparency = 0}):Play()
 end
 
--- Animate loading bar (loop forever)
+-- Animate loading bar over 180 seconds
 local function animateLoadingBar()
-    while true do
-        loadingBar.Size = UDim2.new(0, 0, 1, 0)
-        local tween = TweenService:Create(loadingBar, TweenInfo.new(5, Enum.EasingStyle.Linear), {
-            Size = UDim2.new(1, 0, 1, 0)
-        })
-        tween:Play()
-        tween.Completed:Wait()
-        wait(0.3)
-    end
+    local tweenInfo = TweenInfo.new(180, Enum.EasingStyle.Linear)
+    local tween = TweenService:Create(loadingBar, tweenInfo, {
+        Size = UDim2.new(1, 0, 1, 0)
+    })
+    tween:Play()
 end
 
--- Start
+-- Start animations
 fadeIn()
-task.spawn(animateLoadingBar)
+animateLoadingBar()
